@@ -32,12 +32,12 @@ class LogReg(LogisticRegression):
 		pass
 
 	def compare(self, model2):
+		# Here we can do the difference between two models accuracy, or confusion_matrix1 - confusion_matrix2 to see difference...
 		pass
 
 	def cross_validation(self, X, y, n_splits: int, test_size:float):
 		cv = ShuffleSplit(n_splits = n_splits, test_size = test_size, random_state = self.random_state)
-		X = self.scaler.transform(X)
-		print("Performing cv")
-		scores_log_reg = cross_val_score(self, X, y, cv = cv, verbose=3)
+		print("Performing cross validation")
+		scores_log_reg = cross_val_score(self, X, y, cv = cv, verbose=10, n_jobs=-1)
 		print("Cross validation (accuracy) scores:")
 		print("    Logistic Regression -> mean:", scores_log_reg.mean(), "std:", scores_log_reg.std())
