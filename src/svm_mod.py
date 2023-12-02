@@ -1,0 +1,39 @@
+from sklearn import svm
+from src.base import Base
+
+class SVM_model(svm.SVC, Base):
+    def __init__(self,
+                epsilon: float = 1e-4, 
+                random_state: int = 42,
+                kernel: str = "rbf",
+                gamma: str = "scale",
+                C: float = 1.0,
+                degree: int = 3,
+                coef0: float = 0.0,
+                max_iter: int = 10000):
+        """
+        SVM model
+        """
+        self.epsilon = epsilon 
+        self.random_state = random_state
+        self.kernel = kernel
+        self.gamma = gamma 
+        self.C = C
+        self.degree = degree
+        self.coef0 = coef0
+        self.max_iter = max_iter 
+        # SVM
+        svm.SVC.__init__(
+            self,
+            kernel = self.kernel,
+            gamma = self.gamma,
+            C = self.C,
+            degree = self.degree,
+            coef0 = self.coef0,
+            max_iter = self.max_iter,
+            random_state = self.random_state)
+        # Base
+        Base.__init__(
+            self,
+            name = "Support Vector Machine",
+            random_state = random_state)
