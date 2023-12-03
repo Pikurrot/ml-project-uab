@@ -114,7 +114,7 @@ def preprocessing_LOS(df: pd.DataFrame,
 					 test_size: float = 0.2):
 	"""
 	L : Label encode cut, color and clarity.
-	O : remove Outliers from all features.
+	O : remove Outliers from numerical features.
 	S : Standarize all features except cut.
 
 	## Returns
@@ -159,7 +159,7 @@ def preprocessing_HOS(df: pd.DataFrame,
 					  test_size: float = 0.2):
 	"""
 	H : one-Hot encode color and clarity.
-	O : remove Outliers from 
+	O : remove Outliers from numerical features.
 	S : Standarize all features except cut and one-hot encoded.
 
 	## Returns
