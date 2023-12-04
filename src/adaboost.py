@@ -26,7 +26,8 @@ class AdaBoost(AdaBoostClassifier, Base):
 		self.algorithm = algorithm
 
 		AdaBoostClassifier.__init__(
-			DecisionTreeClassifier(
+			self,
+			estimator = DecisionTreeClassifier(
 				random_state=random_state,
 				criterion=criterion,
 				max_depth=max_depth,
