@@ -1,6 +1,13 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
+
+def preprocessing_L(df: pd.DataFrame) -> pd.DataFrame:
+	"""
+	L : Label encode cut, color and clarity.
+	"""
+	df_copy = df.copy()
 
 def preprocessing_L(df: pd.DataFrame) -> pd.DataFrame:
 	"""
@@ -12,6 +19,17 @@ def preprocessing_L(df: pd.DataFrame) -> pd.DataFrame:
 	le_cut = LabelEncoder()
 	le_color = LabelEncoder()
 	le_clarity = LabelEncoder()
+	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
+	df_copy["color"] = le_color.fit_transform(df_copy["color"])
+	df_copy["clarity"] = le_clarity.fit_transform(df_copy["clarity"])
+
+	return df_copy
+
+def preprocessing_H(df: pd.DataFrame) -> pd.DataFrame:
+	"""
+	H : one-Hot encode color and clarity.
+	"""
+	df_copy = df.copy()
 	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
 	df_copy["color"] = le_color.fit_transform(df_copy["color"])
 	df_copy["clarity"] = le_clarity.fit_transform(df_copy["clarity"])
@@ -49,16 +67,48 @@ def preprocessing_O(df: pd.DataFrame,
 	O : remove Outliers from features initially numerical.
 	"""
 	df_copy = df.copy()
+	# One-hot encode categorical features
+	le_cut = LabelEncoder()
+	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
+	df_copy = pd.get_dummies(df_copy, columns=["color", "clarity"])
+
+	return df_copy
+
+def preprocessing_C(df: pd.DataFrame) -> pd.DataFrame:
+	"""
+	C : Combine x, y, z into volume.
+	"""
+	df_copy = df.copy()
+
+	# Combine x, y, z into volume
+	df_copy["volume"] = df_copy["x"] * df_copy["y"] * df_copy["z"]
+	df_copy = df_copy.drop(columns=["x", "y", "z"])
+
+	return df_copy
+
+def preprocessing_O(df: pd.DataFrame,
+					IQR_mult: float = 1.5) -> pd.DataFrame:
+	"""
+	O : remove Outliers from features initially numerical.
+	"""
+	df_copy = df.copy()
 
 	# Remove outliers
+	numerical = ["carat", "depth", "table", "price", "x", "y", "z", "volume"]
+	features = list(set(df_copy.columns) & set(numerical)) # intersection
+	
 	numerical = ["carat", "depth", "table", "price", "x", "y", "z", "volume"]
 	features = list(set(df_copy.columns) & set(numerical)) # intersection
 	
 	for feature in features:
 		Q1 = df_copy[feature].quantile(0.25)
 		Q3 = df_copy[feature].quantile(0.75)
+		Q1 = df_copy[feature].quantile(0.25)
+		Q3 = df_copy[feature].quantile(0.75)
 		IQR = Q3 - Q1
 
+		lower_bound = Q1 - IQR_mult * IQR
+		upper_bound = Q3 + IQR_mult * IQR
 		lower_bound = Q1 - IQR_mult * IQR
 		upper_bound = Q3 + IQR_mult * IQR
 
