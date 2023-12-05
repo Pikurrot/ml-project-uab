@@ -10,7 +10,8 @@ class SVM_model(svm.SVC, Base):
                 C: float = 1.0,
                 degree: int = 3,
                 coef0: float = 0.0,
-                max_iter: int = 10000):
+                max_iter: int = 10000,
+                class_weight: str = None):
         """
         SVM model
         """
@@ -21,7 +22,8 @@ class SVM_model(svm.SVC, Base):
         self.C = C
         self.degree = degree
         self.coef0 = coef0
-        self.max_iter = max_iter 
+        self.max_iter = max_iter
+        self.class_weight = class_weight
         # SVM
         svm.SVC.__init__(
             self,
@@ -31,7 +33,8 @@ class SVM_model(svm.SVC, Base):
             degree = self.degree,
             coef0 = self.coef0,
             max_iter = self.max_iter,
-            random_state = self.random_state)
+            random_state = self.random_state,
+            class_weight = self.class_weight)
         # Base
         Base.__init__(
             self,
