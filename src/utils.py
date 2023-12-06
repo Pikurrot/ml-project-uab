@@ -23,6 +23,9 @@ def preprocessing_H(df: pd.DataFrame) -> pd.DataFrame:
 	"""
 	H : one-Hot encode color and clarity.
 	"""
+	le_cut = LabelEncoder()
+	le_color = LabelEncoder()
+	le_clarity = LabelEncoder()
 	df_copy = df.copy()
 
 	# One-hot encode categorical features
