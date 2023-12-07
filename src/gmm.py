@@ -28,15 +28,6 @@ class GMM(Base):
 		self.init_params = init_params
 
 		self.models = []
-		for _ in range(n_models):
-			self.models.append(GaussianMixture(
-				n_components = n_components,
-				covariance_type = covariance_type,
-				tol = tol,
-				max_iter = max_iter,
-				n_init = n_init,
-				init_params = init_params,
-				random_state = random_state))
 		
 		Base.__init__(
 			self,
@@ -65,8 +56,19 @@ class GMM(Base):
 		X: np.ndarray of shape (n_samples, n_features)
 		y: np.ndarray of shape (n_samples,)
 		"""
-		for model, target in zip(self.models, range(self.n_models)):
+		self.models = []  # Clear self.models before creating and training new models
+		for target in range(self.n_models):
+			model = GaussianMixture(
+				n_components=self.n_components,
+				covariance_type=self.covariance_type,
+				tol=self.tol,
+				max_iter=self.max_iter,
+				n_init=self.n_init,
+				init_params=self.init_params,
+				random_state=self.random_state
+			)
 			model.fit(X[y == target])
+			self.models.append(model)
 
 	def score(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
 		"""
