@@ -9,12 +9,6 @@ def preprocessing_L(df: pd.DataFrame) -> pd.DataFrame:
 	"""
 	df_copy = df.copy()
 
-def preprocessing_L(df: pd.DataFrame) -> pd.DataFrame:
-	"""
-	L : Label encode cut, color and clarity.
-	"""
-	df_copy = df.copy()
-
 	# Encode categorical to numerical
 	le_cut = LabelEncoder()
 	le_color = LabelEncoder()
@@ -30,43 +24,7 @@ def preprocessing_H(df: pd.DataFrame) -> pd.DataFrame:
 	H : one-Hot encode color and clarity.
 	"""
 	df_copy = df.copy()
-	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
-	df_copy["color"] = le_color.fit_transform(df_copy["color"])
-	df_copy["clarity"] = le_clarity.fit_transform(df_copy["clarity"])
 
-	return df_copy
-
-def preprocessing_H(df: pd.DataFrame) -> pd.DataFrame:
-	"""
-	H : one-Hot encode color and clarity.
-	"""
-	df_copy = df.copy()
-
-	# One-hot encode categorical features
-	le_cut = LabelEncoder()
-	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
-	df_copy = pd.get_dummies(df_copy, columns=["color", "clarity"])
-
-	return df_copy
-
-def preprocessing_C(df: pd.DataFrame) -> pd.DataFrame:
-	"""
-	C : Combine x, y, z into volume.
-	"""
-	df_copy = df.copy()
-
-	# Combine x, y, z into volume
-	df_copy["volume"] = df_copy["x"] * df_copy["y"] * df_copy["z"]
-	df_copy = df_copy.drop(columns=["x", "y", "z"])
-
-	return df_copy
-
-def preprocessing_O(df: pd.DataFrame,
-					IQR_mult: float = 1.5) -> pd.DataFrame:
-	"""
-	O : remove Outliers from features initially numerical.
-	"""
-	df_copy = df.copy()
 	# One-hot encode categorical features
 	le_cut = LabelEncoder()
 	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
@@ -136,7 +94,7 @@ def preprocessing_S(df: pd.DataFrame) -> pd.DataFrame:
 	df_copy2 = df_copy.reset_index(drop=True)
 	df_sep = df_sep.reset_index(drop=True)
 
-	return pd.concat([df_copy, df_sep], axis=1)
+	return pd.concat([df_copy2, df_sep], axis=1)
 
 def preprocessing_LS(df: pd.DataFrame,
 					 random_state: int = 42,
