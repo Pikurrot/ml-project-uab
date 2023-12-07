@@ -119,3 +119,35 @@ class GMM(Base):
 		# Print the mean and standard deviation of the accuracy scores
 		print("Cross validation (accuracy) scores:")
 		print("\tmean:", np.mean(scores), "std:", np.std(scores))
+
+	def get_params(self, deep: bool = False) -> dict:
+		"""
+		Get parameters for this estimator.
+
+		## Parameters
+		deep: bool. If True, will return the parameters for this estimator and contained subobjects that are estimators.
+
+		## Returns
+		params: dict. Parameter names mapped to their values.
+		"""
+		return {
+			"n_models": self.n_models,
+			"n_components": self.n_components,
+			"covariance_type": self.covariance_type,
+			"tol": self.tol,
+			"max_iter": self.max_iter,
+			"n_init": self.n_init,
+			"init_params": self.init_params,
+			"random_state": self.random_state
+		}
+
+	def set_params(self, **params):
+		"""
+		Set the parameters of this estimator.
+
+		## Parameters
+		**params: dict. Estimator parameters.
+		"""
+		for param, value in params.items():
+			setattr(self, param, value)
+		return self
