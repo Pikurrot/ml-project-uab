@@ -9,13 +9,14 @@ def preprocessing_L(df: pd.DataFrame) -> pd.DataFrame:
 	"""
 	df_copy = df.copy()
 
-	# Encode categorical to numerical
-	le_cut = LabelEncoder()
-	le_color = LabelEncoder()
-	le_clarity = LabelEncoder()
-	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
-	df_copy["color"] = le_color.fit_transform(df_copy["color"])
-	df_copy["clarity"] = le_clarity.fit_transform(df_copy["clarity"])
+	# Encode categorical to numerical, in order according to GIA
+	cut_mapping = {"Ideal": 4, "Premium": 3, "Very Good": 2, "Good": 1, "Fair": 0}
+	color_mapping = {"D": 6, "E": 5, "F": 4, "G": 3, "H": 2, "I": 1, "J": 0}
+	clarity_mapping = {"IF": 7, "VVS1": 6, "VVS2": 5, "VS1": 4, "VS2": 3, "SI1": 2, "SI2": 1, "I1": 0}
+
+	df_copy["cut"] = df_copy["cut"].map(cut_mapping)
+	df_copy["color"] = df_copy["color"].map(color_mapping)
+	df_copy["clarity"] = df_copy["clarity"].map(clarity_mapping)
 
 	return df_copy
 
@@ -26,8 +27,8 @@ def preprocessing_H(df: pd.DataFrame) -> pd.DataFrame:
 	df_copy = df.copy()
 
 	# One-hot encode categorical features
-	le_cut = LabelEncoder()
-	df_copy["cut"] = le_cut.fit_transform(df_copy["cut"])
+	cut_mapping = {"Ideal": 4, "Premium": 3, "Very Good": 2, "Good": 1, "Fair": 0}
+	df_copy["cut"] = df_copy["cut"].map(cut_mapping)
 	df_copy = pd.get_dummies(df_copy, columns=["color", "clarity"])
 
 	return df_copy
