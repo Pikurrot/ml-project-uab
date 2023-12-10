@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.model_selection import ShuffleSplit, cross_val_score
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, roc_curve, auc
+from sklearn.preprocessing import label_binarize
+import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
 
 class Base(ABC):
@@ -99,3 +101,37 @@ class Base(ABC):
 		scores_log_reg = cross_val_score(self, X, y, cv=cv, verbose=10, n_jobs=-1)
 		print("Cross validation (accuracy) scores:")
 		print("\tmean:", scores_log_reg.mean(), "std:", scores_log_reg.std())
+
+	def roc_curve(self, X_test: np.ndarray, y_test: np.ndarray, ax: plt.Axes = None, ax_title: str = None):
+		"""
+		Plot the Receiver operating characteristic (ROC) curve, along with the AUC metric.
+		This is done for each class in a one-vs-all way.
+		"""
+
+		y_val_bin = label_binarize(y_test, classes=list(range(5)))
+		y_score = self.predict_proba(X_test)
+		fpr = dict() # false positive rate
+		tpr = dict() # true positive rate
+		roc_auc = dict()
+		for i in range(5):
+			fpr[i], tpr[i], _ = roc_curve(y_val_bin[:, i], y_score[:, i])
+			roc_auc[i] = auc(fpr[i], tpr[i])
+
+		if ax is None:
+			plt.figure(figsize=(5, 5))
+			for i in range(5):
+				plt.plot(fpr[i], tpr[i], label=f"Class {i} (AUC = {roc_auc[i]:.2f})")
+			plt.plot([0, 1], [0, 1], 'k--') # diagonal (random guessing)
+			plt.xlabel('False Positive Rate')
+			plt.ylabel('True Positive Rate')
+			plt.legend()
+			plt.show()
+		else:
+			for i in range(5):
+				ax.plot(fpr[i], tpr[i], label=f"Class {i} (AUC = {roc_auc[i]:.2f})")
+			ax.plot([0, 1], [0, 1], 'k--')
+			ax.set_xlabel('False Positive Rate')
+			ax.set_ylabel('True Positive Rate')
+			if ax_title is not None:
+				ax.set_title(ax_title)
+			ax.legend()
