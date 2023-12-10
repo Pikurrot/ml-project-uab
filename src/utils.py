@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import train_test_split
 
@@ -97,6 +97,19 @@ def preprocessing_S(df: pd.DataFrame) -> pd.DataFrame:
 
 	return pd.concat([df_copy2, df_sep], axis=1)
 
+def preprocessing_P(df: pd.DataFrame,
+					degree: int = 2) -> pd.DataFrame:
+	"""
+	P : create new Polynomial features as combinations of carat, depth, table, price, x, y and z.
+	"""
+	df_copy = df.copy()
+	numerical = ["carat", "depth", "table", "price", "x", "y", "z"]
+	poly = PolynomialFeatures(degree)
+	new_features = poly.fit_transform(df[numerical])[:,1:] # drop first column (1)
+	feature_names = poly.get_feature_names_out(numerical)[1:]
+	df_copy = pd.concat([df_copy.drop(columns=numerical), pd.DataFrame(new_features, columns=feature_names)], axis=1)
+	return df_copy
+
 def preprocessing_LS(df: pd.DataFrame,
 					 random_state: int = 42,
 					 test_size: float = 0.2):
@@ -186,3 +199,26 @@ def preprocessing_HOS(df: pd.DataFrame,
 	test = preprocessing_S(test)
 	# Separate X and y
 	return train.drop(columns=["cut"]), test.drop(columns=["cut"]), train["cut"], test["cut"]
+
+def preprocessing_PLS(df: pd.DataFrame,
+					   random_state: int = 42,
+					   test_size: float = 0.2,
+					   degree: int = 2):
+	"""
+	P : create new Polynomial features as combinations of carat, depth, table, price, x, y and z.
+	L : Label encode cut, color and clarity.
+	S : Standarize all features except cut and one-hot encoded.
+	"""
+	return preprocessing_LS(preprocessing_P(df, degree), random_state, test_size)
+
+def preprocessing_PLOS(df: pd.DataFrame,
+					   random_state: int = 42,
+					   test_size: float = 0.2,
+					   degree: int = 2):
+	"""
+	P : create new Polynomial features as combinations of carat, depth, table, price, x, y and z.
+	L : Label encode cut, color and clarity.
+	O : remove Outliers from numerical features.
+	S : Standarize all features except cut and one-hot encoded.
+	"""
+	return preprocessing_LOS(preprocessing_P(df, degree), random_state, test_size)
