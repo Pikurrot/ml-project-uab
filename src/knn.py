@@ -7,7 +7,7 @@ class KNN_model(KNeighborsClassifier, Base):
                 n_neighbors: int = 5, # hyperparameter to tune
                 weights: str = "uniform",
                 algorithm: str = "auto",
-                leaf_size: int = 30, # TODO: check if changing it can improve computation time
+                leaf_size: int = 30,
                 p: int = 2, # tipically use euclidean metric, try manhattan since we have somewhat high dimensional data
                 metric: str = "minkowski",
                 metric_params: dict = None,
