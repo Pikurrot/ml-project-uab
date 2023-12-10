@@ -45,6 +45,26 @@ class GMM(Base):
 		y_pred: np.ndarray of shape (n_samples,)
 		"""
 		return np.argmax(np.stack([model.score_samples(X) for model in self.models]), axis=0)
+	
+	def predict_proba(self, X: np.ndarray) -> np.ndarray:
+		"""
+		Predict posterior probability of each component given the data.
+
+		## Parameters
+		X: np.ndarray of shape (n_samples, n_features)
+
+		## Returns
+		y_pred: np.ndarray of shape (n_samples, n_components)
+		"""
+		probabilities = np.zeros((X.shape[0], self.n_models))
+
+		for idx, model in enumerate(self.models):
+			probabilities[:, idx] = np.exp(model.score_samples(X))
+
+		# Normalize probabilities so they sum to 1 for each sample
+		probabilities /= probabilities.sum(axis=1, keepdims=True)
+
+		return probabilities
 
 	def fit(self, X: np.ndarray, y: np.ndarray = None):
 		"""
