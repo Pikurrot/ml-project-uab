@@ -61,6 +61,9 @@ class GMM(Base):
 		for idx, model in enumerate(self.models):
 			probabilities[:, idx] = np.exp(model.score_samples(X))
 
+		# handle zero division
+		probabilities[probabilities == 0] = 1e-10
+
 		# Normalize probabilities so they sum to 1 for each sample
 		probabilities /= probabilities.sum(axis=1, keepdims=True)
 
