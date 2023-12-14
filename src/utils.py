@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import train_test_split
@@ -154,6 +155,38 @@ def preprocessing_LOS(df: pd.DataFrame,
 	test = preprocessing_S(test)
 	# Separate X and y
 	return train.drop(columns=["cut"]), test.drop(columns=["cut"]), train["cut"], test["cut"]
+
+def preprocessing_LS_simple(df: pd.DataFrame):
+	"""
+	L : Label encode cut, color and clarity.
+	S : Standarize all features except cut.
+
+	## Returns
+	X, y
+	"""
+	df_copy = df.copy().drop(columns=["Unnamed: 0"])
+	# Encode categorical to numerical
+	df_encoded = preprocessing_L(df_copy)
+	# Standarize
+	df_scaled = preprocessing_S(df_encoded)
+	# Separate X and y
+	return df_scaled.drop(columns=["cut"]), df_scaled["cut"]
+
+def preprocessing_LOS_simple(df: pd.DataFrame):
+	"""
+	L : Label encode cut, color and clarity.
+	O : remove Outliers from numerical features.
+	S : Standarize all features except cut.
+	"""
+	df_copy = df.copy().drop(columns=["Unnamed: 0"])
+	# Encode categorical to numerical
+	df_encoded = preprocessing_L(df_copy)
+	# Remove outliers
+	df_outliers = preprocessing_O(df_encoded)
+	# Standarize train different from test
+	train = preprocessing_S(df_outliers)
+	# Separate X and y
+	return train.drop(columns=["cut"]), train["cut"]
 
 def preprocessing_HS(df: pd.DataFrame,
 					 random_state: int = 42,

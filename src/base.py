@@ -25,14 +25,14 @@ class Base(ABC):
 		"""
 		return self.predict(X)
 
-	def conf_matrix(self, X_test: np.ndarray, y_test: np.ndarray) -> np.ndarray:
+	def conf_matrix(self, X_test: np.ndarray, y_test: np.ndarray, labels: list = None, normalize: str = None) -> np.ndarray:
 		"""
 		Compute the confusion matrix of the model.
 
 		## Returns
 		confusion_matrix: np.ndarray of shape (n_classes, n_classes)
 		"""
-		return confusion_matrix(y_test, self(X_test))
+		return confusion_matrix(y_test, self(X_test), labels=labels, normalize=normalize)
 
 	def compute_metrics(self, X_test: np.ndarray, y_test: np.ndarray) -> dict:
 		"""
