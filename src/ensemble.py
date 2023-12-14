@@ -81,6 +81,8 @@ class Ensemble(Base):
 		y_pred: shape (n_samples,)
 		"""
 		if isinstance(X, pd.DataFrame):
+			if "Unnamed: 0" not in X.columns: # the data has already been processed
+				return self.predict(X)
 			X_copy = X.copy().reset_index(drop=True)
 			Xy = pd.concat([X_copy, pd.DataFrame(np.zeros((X_copy.shape[0], 1)), columns=["cut"])], axis=1)
 			X_new, _ = utils.preprocessing_LS_simple(Xy)
