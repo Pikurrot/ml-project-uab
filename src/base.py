@@ -48,10 +48,10 @@ class Base(ABC):
 		y_pred = self(X_test)
 		report = classification_report(y_test, y_pred, output_dict=True)
 		return {
-			"accuracy": accuracy_score(y_test, y_pred),
-			"precision": report["1"]["precision"],
-			"recall": report["1"]["recall"],
-			"f1": report["1"]["f1-score"]
+			"accuracy": report["accuracy"],
+			"precision": report["macro avg"]["precision"],
+			"recall": report["macro avg"]["recall"],
+			"f1": report["macro avg"]["f1-score"]
 		}
 
 	def compare(self, model2, X_test: np.ndarray, y_test: np.ndarray, print_diff: bool = True):

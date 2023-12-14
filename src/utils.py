@@ -83,7 +83,7 @@ def preprocessing_S(df: pd.DataFrame) -> pd.DataFrame:
 	df_copy = df.copy()
 
 	# Separate cut and one-hot encoded
-	sep = list(df_copy.columns[(df_copy.nunique() == 2)]) + ["cut"]
+	sep = list(df_copy.columns[df_copy.columns.str.contains("_")]) + ["cut"]
 	df_sep = df_copy[sep]
 	df_copy = df_copy.drop(columns=sep)
 
