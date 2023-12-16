@@ -53,22 +53,15 @@ def preprocessing_O(df: pd.DataFrame,
 	"""
 	df_copy = df.copy()
 
-	# Remove outliers
-	numerical = ["carat", "depth", "table", "price", "x", "y", "z", "volume"]
-	features = list(set(df_copy.columns) & set(numerical)) # intersection
-	
+	# Remove outliers	
 	numerical = ["carat", "depth", "table", "price", "x", "y", "z", "volume"]
 	features = list(set(df_copy.columns) & set(numerical)) # intersection
 	
 	for feature in features:
 		Q1 = df_copy[feature].quantile(0.25)
 		Q3 = df_copy[feature].quantile(0.75)
-		Q1 = df_copy[feature].quantile(0.25)
-		Q3 = df_copy[feature].quantile(0.75)
 		IQR = Q3 - Q1
 
-		lower_bound = Q1 - IQR_mult * IQR
-		upper_bound = Q3 + IQR_mult * IQR
 		lower_bound = Q1 - IQR_mult * IQR
 		upper_bound = Q3 + IQR_mult * IQR
 
