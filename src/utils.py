@@ -70,7 +70,7 @@ def preprocessing_O(df: pd.DataFrame,
 
 	return df_copy
 
-def preprocessing_S(df: pd.DataFrame) -> pd.DataFrame:
+def preprocessing_S(df: pd.DataFrame, scaler=None, return_scaler=False) -> pd.DataFrame:
 	"""
 	S : Standarize all features except cut and one-hot encoded.
 	"""
@@ -82,13 +82,16 @@ def preprocessing_S(df: pd.DataFrame) -> pd.DataFrame:
 	df_copy = df_copy.drop(columns=sep)
 
 	# Standarize
-	scaler = StandardScaler()
-	scaler.fit(df_copy)
+	if scaler is None:
+		scaler = StandardScaler()
+		scaler.fit(df_copy)
 	df_copy = pd.DataFrame(scaler.transform(df_copy), columns=scaler.feature_names_in_)
 
 	df_copy2 = df_copy.reset_index(drop=True)
 	df_sep = df_sep.reset_index(drop=True)
-
+	
+	if return_scaler:
+		return pd.concat([df_copy2, df_sep], axis=1), scaler
 	return pd.concat([df_copy2, df_sep], axis=1)
 
 def preprocessing_P(df: pd.DataFrame,
@@ -120,8 +123,8 @@ def preprocessing_LS(df: pd.DataFrame,
 	# Separate train and test
 	train, test = train_test_split(df_encoded, test_size=test_size, random_state=random_state)
 	# Standarize train different from test
-	train = preprocessing_S(train)
-	test = preprocessing_S(test)
+	train, scaler = preprocessing_S(train, return_scaler=True)
+	test = preprocessing_S(test, scaler=scaler)
 	# Separate X and y
 	return train.drop(columns=["cut"]), test.drop(columns=["cut"]), train["cut"], test["cut"]
 
@@ -144,12 +147,12 @@ def preprocessing_LOS(df: pd.DataFrame,
 	# Separate train and test
 	train, test = train_test_split(df_outliers, test_size=test_size, random_state=random_state)
 	# Standarize train different from test
-	train = preprocessing_S(train)
-	test = preprocessing_S(test)
+	train, scaler = preprocessing_S(train, return_scaler=True)
+	test = preprocessing_S(test, scaler=scaler)
 	# Separate X and y
 	return train.drop(columns=["cut"]), test.drop(columns=["cut"]), train["cut"], test["cut"]
 
-def preprocessing_LS_simple(df: pd.DataFrame):
+def preprocessing_LS_simple(df: pd.DataFrame, scaler=None, return_scaler=False):
 	"""
 	L : Label encode cut, color and clarity.
 	S : Standarize all features except cut.
@@ -161,11 +164,13 @@ def preprocessing_LS_simple(df: pd.DataFrame):
 	# Encode categorical to numerical
 	df_encoded = preprocessing_L(df_copy)
 	# Standarize
-	df_scaled = preprocessing_S(df_encoded)
+	df_scaled, scaler = preprocessing_S(df_encoded, scaler=scaler, return_scaler=True)
 	# Separate X and y
+	if return_scaler:
+		return df_scaled.drop(columns=["cut"]), df_scaled["cut"], scaler
 	return df_scaled.drop(columns=["cut"]), df_scaled["cut"]
 
-def preprocessing_LOS_simple(df: pd.DataFrame):
+def preprocessing_LOS_simple(df: pd.DataFrame, scaler=None, return_scaler=False):
 	"""
 	L : Label encode cut, color and clarity.
 	O : remove Outliers from numerical features.
@@ -177,9 +182,11 @@ def preprocessing_LOS_simple(df: pd.DataFrame):
 	# Remove outliers
 	df_outliers = preprocessing_O(df_encoded)
 	# Standarize train different from test
-	train = preprocessing_S(df_outliers)
+	df_scaled, scaler = preprocessing_S(df_outliers, scaler=scaler, return_scaler=True)
 	# Separate X and y
-	return train.drop(columns=["cut"]), train["cut"]
+	if return_scaler:
+		return df_scaled.drop(columns=["cut"]), df_scaled["cut"], scaler
+	return df_scaled.drop(columns=["cut"]), df_scaled["cut"]
 
 def preprocessing_HS(df: pd.DataFrame,
 					 random_state: int = 42,
@@ -197,8 +204,8 @@ def preprocessing_HS(df: pd.DataFrame,
 	# Separate train and test
 	train, test = train_test_split(df_encoded, test_size=test_size, random_state=random_state)
 	# Standarize train different from test
-	train = preprocessing_S(train)
-	test = preprocessing_S(test)
+	train, scaler = preprocessing_S(train, return_scaler=True)
+	test = preprocessing_S(test, scaler=scaler)
 	# Separate X and y
 	return train.drop(columns=["cut"]), test.drop(columns=["cut"]), train["cut"], test["cut"]
 
@@ -221,8 +228,8 @@ def preprocessing_HOS(df: pd.DataFrame,
 	# Separate train and test
 	train, test = train_test_split(df_outliers, test_size=test_size, random_state=random_state)
 	# Standarize train different from test
-	train = preprocessing_S(train)
-	test = preprocessing_S(test)
+	train, scaler = preprocessing_S(train, return_scaler=True)
+	test = preprocessing_S(test, scaler)
 	# Separate X and y
 	return train.drop(columns=["cut"]), test.drop(columns=["cut"]), train["cut"], test["cut"]
 

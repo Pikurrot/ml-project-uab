@@ -8,13 +8,15 @@ class Ensemble(Base):
 	def __init__(self,
 			  	models: list,
 				voting: str = "soft",
-				weights: list = None):
+				weights: list = None,
+				scaler=None):
 		"""
 		Ensemble model.
 		"""
 		self.models = models
 		self.voting = voting
 		self.weights = weights
+		self.scaler = scaler
 
 		super().__init__(
 			name="Ensemble",
@@ -85,12 +87,12 @@ class Ensemble(Base):
 				return self.predict(X)
 			X_copy = X.copy().reset_index(drop=True)
 			Xy = pd.concat([X_copy, pd.DataFrame(np.zeros((X_copy.shape[0], 1)), columns=["cut"])], axis=1)
-			X_new, _ = utils.preprocessing_LS_simple(Xy)
+			X_new, _ = utils.preprocessing_LS_simple(Xy, scaler=self.scaler)
 		elif isinstance(X, np.ndarray):
 			Xy = np.concatenate([X, np.zeros((X.shape[0], 1))], axis=1)
 			X_df = pd.DataFrame(Xy,
 				columns=["Unnamed: 0", "carat", "color", "clarity", "depth", "table", "price", "x", "y", "z", "cut"])
-			X_new, _ = utils.preprocessing_LS_simple(X_df)
+			X_new, _ = utils.preprocessing_LS_simple(X_df, scaler=self.scaler)
 		pred_label = self.predict(X_new)
 		cut_mapping = {4: "Ideal", 3: "Premium", 2: "Very Good", 1: "Good", 0: "Fair"}
 		pred = pd.Series(pred_label).map(cut_mapping)
